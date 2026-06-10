@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       // REQUERIMIENTO: Nombres y Apellidos en la parte superior
                       const Text(
-                        'Mario Mauricio Jacho Cedeño',
+                        'Grupo 2:\nCamaton Lainez Segundo Rodolfo\nGuevara Bustos Yandri David\nGutierrez Paredes Andy Luis\nJacho Cedeño Mario Mauricio\nQuiroga Peralta Ruben Alfredo',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
