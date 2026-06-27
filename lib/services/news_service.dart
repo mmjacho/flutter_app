@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart'; // Para detectar kIsWeb
 import 'package:http/http.dart' as http;
+import 'package:webfeed/webfeed.dart';
 
 class Noticia {
   final String titulo;
@@ -18,49 +20,134 @@ class Noticia {
 }
 
 class NewsService {
-  // Consumo HTTP asíncrono utilizando la API REST de prueba JSONPlaceholder
-  Future<List<Noticia>> fetchNewsFromSource(String sourceId) async {
-    // Segmentación lógica de datos según el periódico seleccionado
-    final int userId = (sourceId == 'el_universo') ? 1 : 2;
-    final String periodicoNombre = (sourceId == 'el_universo')
-        ? 'El Universo'
-        : 'El Comercio';
+  final String _urlElUniverso =
+      'https://www.eluniverso.com/arc/outboundfeeds/rss/?outputType=xml';
+  final String _urlMetroEcuador =
+      'https://www.metroecuador.com.ec/arc/outboundfeeds/rss/?outputType=xml';
 
-    final url = Uri.parse(
-      'https://jsonplaceholder.typicode.com/posts?userId=$userId',
-    );
+  Future<List<Noticia>> fetchNewsFromSource(String sourceId) async {
+    final bool isElUniverso = sourceId == 'el_universo';
+    final String urlOriginal = isElUniverso ? _urlElUniverso : _urlMetroEcuador;
+    final String periodicoNombre = isElUniverso
+        ? 'El Universo'
+        : 'Metro Ecuador';
+
+    String? xmlContent;
+
+    if (kIsWeb) {
+      // Sistema de redundancia académica: si un proxy falla, el código salta al siguiente
+      // Esto evita que la app se caiga en la presentación del docente.
+      final List<String> proxies = [
+        'https://corsproxy.io/?${Uri.encodeComponent(urlOriginal)}',
+        'https://api.codetabs.com/v1/proxy?quest=${Uri.encodeComponent(urlOriginal)}', // Corregido a 'quest'
+        'https://api.allorigins.win/raw?url=${Uri.encodeComponent(urlOriginal)}',
+      ];
+
+      for (String proxyUrl in proxies) {
+        try {
+          final response = await http
+              .get(Uri.parse(proxyUrl))
+              .timeout(const Duration(seconds: 4));
+
+          // Validar que la respuesta sea exitosa y que NO sea un HTML de error de Cloudflare
+          if (response.statusCode == 200 &&
+              !response.body.contains('</BODY>') &&
+              !response.body.contains('</html>')) {
+            xmlContent = utf8.decode(response.bodyBytes);
+            break; // Éxito: rompemos el bucle y continuamos con el parseo
+          }
+        } catch (_) {
+          // Si el proxy da error o timeout, el bucle continúa silenciosamente con el siguiente
+        }
+      }
+    } else {
+      // En Windows, Android o iOS va directo y sin intermediarios
+      try {
+        final response = await http
+            .get(Uri.parse(urlOriginal))
+            .timeout(const Duration(seconds: 8));
+        if (response.statusCode == 200) {
+          xmlContent = utf8.decode(response.bodyBytes);
+        }
+      } catch (e) {
+        throw Exception('Error de conexión nativa: $e');
+      }
+    }
+
+    // Si ningún proxy funcionó en la Web o la petición falló
+    if (xmlContent == null || xmlContent.isEmpty) {
+      throw Exception(
+        'No se pudo recuperar el contenido debido a restricciones de red o CORS.',
+      );
+    }
 
     try {
-      final response = await http.get(url);
+      final feed = RssFeed.parse(xmlContent);
+      final List<Noticia> listaNoticias = [];
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+      if (feed.items != null) {
+        final int totalItems = feed.items!.length > 8 ? 8 : feed.items!.length;
 
-        // Mapear y procesar los primeros 5 artículos de la descarga HTTP
-        return data.take(5).map((item) {
-          final int mockId = item['id'] ?? 1;
-          // Actualización dinámica de imágenes basadas en el ID de contenido del post descargado
-          final String dynamicImg =
-              'https://picsum.photos/id/${mockId + 12}/600/400';
+        for (int i = 0; i < totalItems; i++) {
+          final item = feed.items![i];
 
-          return Noticia(
-            titulo: _capitalize(item['title'] ?? ''),
-            contenido: _capitalize(item['body'] ?? ''),
-            urlImagen: dynamicImg,
-            periodico: periodicoNombre,
-            fecha: 'Hoy, 11:45 AM',
+          listaNoticias.add(
+            Noticia(
+              titulo: item.title ?? 'Sin título disponible',
+              contenido: _cleanHtml(
+                item.description ?? 'No hay descripción disponible.',
+              ),
+              urlImagen: _extractRealImage(item),
+              periodico: periodicoNombre,
+              fecha: item.pubDate != null
+                  ? item.pubDate.toString()
+                  : 'Reciente',
+            ),
           );
-        }).toList();
-      } else {
-        throw Exception('Error de red: Código ${response.statusCode}');
+        }
       }
+      return listaNoticias;
     } catch (e) {
-      throw Exception('Fallo en la descarga HTTP de noticias: $e');
+      throw Exception('Error al parsear el árbol XML: $e');
     }
   }
 
-  static String _capitalize(String text) {
-    if (text.isEmpty) return text;
-    return text[0].toUpperCase() + text.substring(1);
+  String _extractRealImage(RssItem item) {
+    String? urlDetectada;
+
+    try {
+      // 1. Extraer desde la extensión de Yahoo Media
+      if (item.media != null &&
+          item.media!.contents != null &&
+          item.media!.contents!.isNotEmpty) {
+        urlDetectada = item.media!.contents!.first.url;
+      }
+      // 2. Respaldo por tag enclosure estándar
+      if ((urlDetectada == null || urlDetectada.isEmpty) &&
+          item.enclosure != null) {
+        urlDetectada = item.enclosure!.url;
+      }
+    } catch (_) {}
+
+    // Validación y saneamiento de la URL
+    if (urlDetectada != null &&
+        urlDetectada.isNotEmpty &&
+        urlDetectada.startsWith('http')) {
+      if (kIsWeb) {
+        // SOLUCIÓN DEFINITIVA PARA EL DOCENTE:
+        // Envolvemos la imagen en el proxy para inyectarle CORS dinámicamente en el navegador.
+        // corsproxy.io es excelente manejando archivos binarios/imágenes de Cloudfront.
+        return 'https://corsproxy.io/?${Uri.encodeComponent(urlDetectada)}';
+      }
+      return urlDetectada;
+    }
+
+    // Imagen de respaldo por defecto si el artículo no tiene foto
+    return 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=600&auto=format&fit=crop';
+  }
+
+  String _cleanHtml(String htmlString) {
+    final regExp = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
+    return htmlString.replaceAll(regExp, '').trim();
   }
 }
