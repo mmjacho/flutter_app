@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/news_service.dart'; // Esto ya importa tanto la clase NewsService como Noticia
+import '../services/news_service.dart';
 
 class NoticiasScreen extends StatefulWidget {
   const NoticiasScreen({super.key});
@@ -56,9 +56,7 @@ class _NoticiasScreenState extends State<NoticiasScreen> {
                   'Metro Ecuador',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                selected:
-                    _selectedSource ==
-                    'el_comercio', // Mantiene la lógica original de tu variable id
+                selected: _selectedSource == 'el_comercio',
                 onSelected: (bool selected) {
                   if (selected) {
                     setState(() {

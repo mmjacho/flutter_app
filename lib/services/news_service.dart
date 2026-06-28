@@ -36,10 +36,9 @@ class NewsService {
 
     if (kIsWeb) {
       // Sistema de redundancia académica: si un proxy falla, el código salta al siguiente
-      // Esto evita que la app se caiga en la presentación del docente.
       final List<String> proxies = [
         'https://corsproxy.io/?${Uri.encodeComponent(urlOriginal)}',
-        'https://api.codetabs.com/v1/proxy?quest=${Uri.encodeComponent(urlOriginal)}', // Corregido a 'quest'
+        'https://api.codetabs.com/v1/proxy?quest=${Uri.encodeComponent(urlOriginal)}',
         'https://api.allorigins.win/raw?url=${Uri.encodeComponent(urlOriginal)}',
       ];
 
@@ -134,9 +133,6 @@ class NewsService {
         urlDetectada.isNotEmpty &&
         urlDetectada.startsWith('http')) {
       if (kIsWeb) {
-        // SOLUCIÓN DEFINITIVA PARA EL DOCENTE:
-        // Envolvemos la imagen en el proxy para inyectarle CORS dinámicamente en el navegador.
-        // corsproxy.io es excelente manejando archivos binarios/imágenes de Cloudfront.
         return 'https://corsproxy.io/?${Uri.encodeComponent(urlDetectada)}';
       }
       return urlDetectada;
