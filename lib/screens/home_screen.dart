@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'academic_events_screen.dart';
 import 'forms_screen.dart';
 import 'news_screen.dart';
 import 'profile_screen.dart';
@@ -18,7 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
     const _InicioTab(), // Pestaña 0: Inicio
     const FormularioScreen(), // Pestaña 1: Formulario
     const NoticiasScreen(), // Pestaña 2: Noticias
-    const ProfileScreen(), // Pestaña 3: Perfil
+    const AcademicEventsScreen(), // Pestaña 3: Eventos Académicos
+    const ProfileScreen(), // Pestaña 4: Perfil
   ];
 
   @override
@@ -71,6 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.newspaper_outlined),
             selectedIcon: Icon(Icons.newspaper),
             label: 'Noticias HTTP',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.event_outlined),
+            selectedIcon: Icon(Icons.event),
+            label: 'Eventos Académicos',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),

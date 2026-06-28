@@ -1,0 +1,27 @@
+{
+    "estado": "exitoso",
+    "total_registros": 3,
+    "eventos": [
+        {
+            "id": "EVT-001",
+            "titulo": "Examen de Fin de Ciclo - Seguridad Informática",
+            "fecha": "Viernes, 03 de Julio de 2026",
+            "aula": "Laboratorio de Cómputo 3",
+            "descripcion": "Evaluación práctica presencial sobre Hardening de sistemas operativos Windows y análisis de vulnerabilidades OWASP."
+        },
+        {
+            "id": "EVT-002",
+            "titulo": "Entrega de Avance de Proyecto - EduSync Flutter",
+            "fecha": "Lunes, 06 de Julio de 2026",
+            "aula": "Plataforma Virtual Moodle",
+            "descripcion": "Subir el árbol de directorios limpio, componentes de navegación estables y la integración de lectura local de JSON."
+        },
+        {
+            "id": "EVT-003",
+            "titulo": "Conferencia de Ciberseguridad Aplicada",
+            "fecha": "Jueves, 09 de Julio de 2026",
+            "aula": "Auditorio Principal de la Facultad",
+            "descripcion": "Seminario magistral sobre auditoría forense, uso de Policy Analyzer de Microsoft y entornos corporativos seguros."
+        }
+    ]
+}
