@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'forms_screen.dart';
-import 'news_screen.dart'; // Importación de la nueva pantalla independiente
+import 'news_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const _InicioTab(), // Pestaña 0: Inicio original
     const FormularioScreen(), // Pestaña 1: Formulario original
     const NoticiasScreen(), // Pestaña 2: NOTICIAS EXTRAÍDAS (Archivo Independiente)
-    const _PerfilTab(), // Pestaña 3: Perfil original
+    const ProfileScreen(), // Pestaña 3: Perfil original
   ];
 
   @override
@@ -140,73 +141,6 @@ class _InicioTab extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Sub-pantalla para pestaña de Perfil (PRESERVADA COMPLETAMENTE)
-class _PerfilTab extends StatelessWidget {
-  const _PerfilTab();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
-            const CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.blueGrey,
-              child: Icon(Icons.person, size: 70, color: Colors.white),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Estudiante EduSync',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'grupo2@edusync.edu.ec',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 30),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Configuración de Cuenta'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.lock),
-              title: const Text('Cambiar Contraseña'),
-              onTap: () {},
-            ),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('Cerrar Sesión'),
-            ),
-            const SizedBox(height: 30),
           ],
         ),
       ),
