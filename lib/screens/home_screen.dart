@@ -13,12 +13,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  // Lista de pantallas preservando la estructura exacta original
+  // Lista de pantallas
   final List<Widget> _screens = [
-    const _InicioTab(), // Pestaña 0: Inicio original
-    const FormularioScreen(), // Pestaña 1: Formulario original
-    const NoticiasScreen(), // Pestaña 2: NOTICIAS EXTRAÍDAS (Archivo Independiente)
-    const ProfileScreen(), // Pestaña 3: Perfil original
+    const _InicioTab(), // Pestaña 0: Inicio
+    const FormularioScreen(), // Pestaña 1: Formulario
+    const NoticiasScreen(), // Pestaña 2: Noticias
+    const ProfileScreen(), // Pestaña 3: Perfil
   ];
 
   @override
