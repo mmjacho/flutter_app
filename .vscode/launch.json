@@ -7,22 +7,19 @@
         {
             "name": "flutter_app",
             "request": "launch",
-            "type": "dart",
-            "deviceId": "choose"
+            "type": "dart"
         },
         {
             "name": "flutter_app (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile",
-            "deviceId": "choose"
+            "flutterMode": "profile"
         },
         {
             "name": "flutter_app (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release",
-            "deviceId": "choose"
+            "flutterMode": "release"
         }
     ]
 }
